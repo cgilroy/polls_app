@@ -14,6 +14,8 @@ class Response < ApplicationRecord
         through: :answer_choice,
         source: :question
 
+    validate :respondent_not_author
+
     validate :not_duplicate_response
 
     def sibling_responses
@@ -26,6 +28,14 @@ class Response < ApplicationRecord
 
     def not_duplicate_response
         errors[:respondent_id] << 'already answered this question' if respondent_already_answered?
+    end
+
+    def respondent_not_author
+        poll_author_id = self.answer_choice.question.poll.author_id
+
+        if poll_author_id = self.respondent_id
+            errors[:respondent_id] << 'cannot answer own poll'
+        end
     end
     
 end
