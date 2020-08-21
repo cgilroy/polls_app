@@ -1,5 +1,5 @@
 
-class Question
+class Question < ApplicationRecord
     validates :text, presence: true
 
     belongs_to :poll,
