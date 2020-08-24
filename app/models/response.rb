@@ -14,9 +14,9 @@ class Response < ApplicationRecord
         through: :answer_choice,
         source: :question
 
-    validate :respondent_not_author
+    validate :respondent_not_author, unless: -> { answer_choice.nil? }
 
-    validate :not_duplicate_response
+    validate :not_duplicate_response, unless: -> { answer_choice.nil? }
 
     def sibling_responses
         self.question.responses.where.not('responses.id = ?',self.id)
@@ -33,7 +33,7 @@ class Response < ApplicationRecord
     def respondent_not_author
         poll_author_id = self.answer_choice.question.poll.author_id
 
-        if poll_author_id = self.respondent_id
+        if poll_author_id == self.respondent_id
             errors[:respondent_id] << 'cannot answer own poll'
         end
     end
