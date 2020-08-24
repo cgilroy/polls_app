@@ -21,10 +21,11 @@ class Question < ApplicationRecord
         # answer_choices.includes(:responses).each do |choice|
         #     output[choice.text] = choice.responses.length
         # end
+        object = {}
 
-        output = AnswerChoice.find_by_sql([<<-SQL, id])
+        data = AnswerChoice.find_by_sql([<<-SQL, id])
             SELECT 
-                answer_choices.text, COUNT(responses.id) as answer_count
+                answer_choices.text, COUNT(responses.id) as num_of_answers
             FROM
                 answer_choices
             LEFT OUTER JOIN
@@ -32,8 +33,11 @@ class Question < ApplicationRecord
             WHERE
                 answer_choices.question_id = ?
             GROUP BY 
-                answer_choices.text
+                answer_choices.id
         SQL
-        output
+        data.each do |item|
+            object[item.text] = item.num_of_answers
+        end
+        object
     end
 end
